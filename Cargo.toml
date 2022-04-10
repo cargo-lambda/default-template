@@ -1,0 +1,33 @@
+[package]
+name = "{{ project_name }}"
+version = "0.1.0"
+edition = "2021"
+
+
+# Use cargo-edit(https://github.com/killercup/cargo-edit#installation)
+# to manage dependencies.
+# Running `cargo add DEPENDENCY_NAME` will
+# add the latest version of a dependency to the list,
+# and it will keep the alphabetic ordering for you.
+
+[dependencies]
+{% if event_type_feature -%}
+aws_lambda_events = { version = "{{ aws_lambda_events_version | default: "0.6.1" }}", default-features = false, features = ["{{ event_type_feature }}"] }
+{% endif -%}
+{% if http_function -%}
+lambda_http = "{{ lambda_http_version | default: "0.5.1" }}"
+{% endif -%}
+lambda_runtime = "{{ lambda_runtime_version | default: "0.5.1" }}"
+{% if basic_example -%}
+serde = "1.0.136"
+{% endif -%}
+tokio = { version = "1.17.0", features = ["full"] }
+tracing = "0.1.32"
+tracing-subscriber = "0.3.9"
+
+{% if function_name -%}
+[[bin]]
+name = "{{ function_name }}"
+path = "src/main.rs"
+test = false
+{% endif %}
