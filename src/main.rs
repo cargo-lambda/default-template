@@ -1,8 +1,8 @@
 {%- if event_type_import -%}
 use {{ event_type_import }};
 {%- endif %}
-{% if http_function -%}
-use lambda_http::{run, service_fn, Error, IntoResponse, Request, RequestExt};
+{%- if http_function -%}
+use lambda_http::{run, service_fn, Error, IntoResponse, Request, RequestExt, Response};
 {%- else -%}
 use lambda_runtime::{run, service_fn, Error, LambdaEvent};
 {%- endif %}
@@ -56,7 +56,12 @@ async fn function_handler(event: Request) -> Result<impl IntoResponse, Error> {
 
     // Return something that implements IntoResponse.
     // It will be serialized to the right response event automatically by the runtime
-    Ok("Hello AWS Lambda HTTP request".into_response())
+    let resp = Response::builder()
+        .status(200)
+        .header("content-type", "text/html")
+        .body("Hello AWS Lambda HTTP request")
+        .map_err(Box::new)?;
+    Ok(resp)
 }
 {%- endif -%}
 {% if event_type %}
