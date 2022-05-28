@@ -21,9 +21,9 @@ lambda_runtime = "{{ lambda_runtime_version | default: "0.5.1" }}"
 {% if basic_example -%}
 serde = "1.0.136"
 {% endif -%}
-tokio = { version = "1.17.0", features = ["full"] }
-tracing = "0.1.32"
-tracing-subscriber = "0.3.9"
+tokio = { version = "1", features = ["macros"] }
+tracing = { version = "0.1", features = ["log"] }
+tracing-subscriber = { version = "0.3", default-features = false, features = ["fmt"] }
 
 {% if function_name -%}
 [[bin]]
