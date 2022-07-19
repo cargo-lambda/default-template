@@ -2,10 +2,10 @@
 use {{ event_type_import }};
 {%- endif %}
 {%- if http_function -%}
-use lambda_http::{run, service_fn, Error, IntoResponse, Request, RequestExt, Response};
+use lambda_http::{run, service_fn, Body, Error, Request, RequestExt, Response};
 {%- else -%}
 use lambda_runtime::{run, service_fn, Error, LambdaEvent};
-{%- endif %}
+{% endif %}
 {% if basic_example -%}
 use serde::{Deserialize, Serialize};
 
@@ -51,7 +51,7 @@ async fn function_handler(event: LambdaEvent<Request>) -> Result<Response, Error
 /// Write your code inside it.
 /// There are some code example in the following URLs:
 /// - https://github.com/awslabs/aws-lambda-rust-runtime/tree/main/lambda-http/examples
-async fn function_handler(event: Request) -> Result<impl IntoResponse, Error> {
+async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     // Extract some useful information from the request
 
     // Return something that implements IntoResponse.
@@ -59,7 +59,7 @@ async fn function_handler(event: Request) -> Result<impl IntoResponse, Error> {
     let resp = Response::builder()
         .status(200)
         .header("content-type", "text/html")
-        .body("Hello AWS Lambda HTTP request")
+        .body("Hello AWS Lambda HTTP request".into())
         .map_err(Box::new)?;
     Ok(resp)
 }
@@ -81,6 +81,8 @@ async fn function_handler(event: LambdaEvent<{{ event_type }}>) -> Result<(), Er
 async fn main() -> Result<(), Error> {
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::INFO)
+        // disable printing the name of the module in every log line.
+        .with_target(false)
         // disabling time is handy because CloudWatch will add the ingestion time.
         .without_time()
         .init();

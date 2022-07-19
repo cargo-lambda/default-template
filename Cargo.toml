@@ -3,21 +3,29 @@ name = "{{ project_name }}"
 version = "0.1.0"
 edition = "2021"
 
-
-# Use cargo-edit(https://github.com/killercup/cargo-edit#installation)
-# to manage dependencies.
+# Starting in Rust 1.62 you can use `cargo add` to add dependencies 
+# to your project.
+#
+# If you're using an older Rust version,
+# download cargo-edit(https://github.com/killercup/cargo-edit#installation) 
+# to install the `add` subcommand.
+#
 # Running `cargo add DEPENDENCY_NAME` will
 # add the latest version of a dependency to the list,
 # and it will keep the alphabetic ordering for you.
 
 [dependencies]
 {% if event_type_feature -%}
-aws_lambda_events = { version = "{{ aws_lambda_events_version | default: "0.6.1" }}", default-features = false, features = ["{{ event_type_feature }}"] }
+aws_lambda_events = { version = "{{ aws_lambda_events_version | default: "0.6.3" }}", default-features = false, features = ["{{ event_type_feature }}"] }
 {% endif -%}
 {% if http_function -%}
-lambda_http = "{{ lambda_http_version | default: "0.5.2" }}"
-{% endif -%}
-lambda_runtime = "{{ lambda_runtime_version | default: "0.5.1" }}"
+{%- if http_feature -%}
+lambda_http = { version = "{{ lambda_http_version | default: "0.6.0" }}", default-features = false, features = ["{{ http_feature }}"] }
+{%- else -%}
+lambda_http = "{{ lambda_http_version | default: "0.6.0" }}"
+{%- endif -%}
+{% endif %}
+lambda_runtime = "{{ lambda_runtime_version | default: "0.6.0" }}"
 {% if basic_example -%}
 serde = "1.0.136"
 {% endif -%}
@@ -30,4 +38,4 @@ tracing-subscriber = { version = "0.3", default-features = false, features = ["f
 name = "{{ function_name }}"
 path = "src/main.rs"
 test = false
-{% endif %}
+{%- endif -%}
