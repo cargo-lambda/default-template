@@ -30,7 +30,7 @@ struct Response {
 /// This is the main body for the function.
 /// Write your code inside it.
 /// There are some code example in the following URLs:
-/// - https://github.com/awslabs/aws-lambda-rust-runtime/tree/main/lambda-runtime/examples
+/// - https://github.com/awslabs/aws-lambda-rust-runtime/tree/main/examples
 /// - https://github.com/aws-samples/serverless-rust-demo/
 async fn function_handler(event: LambdaEvent<Request>) -> Result<Response, Error> {
     // Extract some useful info from the request
@@ -50,7 +50,7 @@ async fn function_handler(event: LambdaEvent<Request>) -> Result<Response, Error
 /// This is the main body for the function.
 /// Write your code inside it.
 /// There are some code example in the following URLs:
-/// - https://github.com/awslabs/aws-lambda-rust-runtime/tree/main/lambda-http/examples
+/// - https://github.com/awslabs/aws-lambda-rust-runtime/tree/main/examples
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     // Extract some useful information from the request
 
@@ -68,7 +68,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
 /// This is the main body for the function.
 /// Write your code inside it.
 /// There are some code example in the following URLs:
-/// - https://github.com/awslabs/aws-lambda-rust-runtime/tree/main/lambda-runtime/examples
+/// - https://github.com/awslabs/aws-lambda-rust-runtime/tree/main/examples
 /// - https://github.com/aws-samples/serverless-rust-demo/
 async fn function_handler(event: LambdaEvent<{{ event_type }}>) -> Result<(), Error> {
     // Extract some useful information from the request
