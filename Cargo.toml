@@ -15,6 +15,18 @@ edition = "2021"
 # and it will keep the alphabetic ordering for you.
 
 [dependencies]
+{%- comment -%}
+We sanitize the "type" variable here so that the templates that expect a type variable work
+with versions of the CLI that don't provide it.  Once the CLI that provides the type variable
+is rolled out widely we can remove this process, as the CLI will provide the type variable
+in all cases.
+{%- endcomment -%}
+{%- if type -%}
+{%- assign type = type -%}
+{%- else -%}
+{%- assign type = "function" -%}
+{%- endif -%}
+{% if type == "function" %}
 {% if event_type_feature -%}
 aws_lambda_events = { version = "{{ aws_lambda_events_version | default: "0.6.3" }}", default-features = false, features = ["{{ event_type_feature }}"] }
 {% endif -%}
@@ -29,6 +41,10 @@ lambda_runtime = "{{ lambda_runtime_version | default: "0.6.0" }}"
 {% if basic_example -%}
 serde = "1.0.136"
 {% endif -%}
+{% elsif type == "extension" or type == "logs_extension" %}
+lambda-extension = "{{ lambda_runtime_version | default: "0.6.0" }}"
+{% endif %}
+
 tokio = { version = "1", features = ["macros"] }
 tracing = { version = "0.1", features = ["log"] }
 tracing-subscriber = { version = "0.3", default-features = false, features = ["fmt"] }

@@ -1,3 +1,15 @@
+{%- comment -%}
+We sanitize the "type" variable here so that the templates that expect a type variable work
+with versions of the CLI that don't provide it.  Once the CLI that provides the type variable
+is rolled out widely we can remove this process, as the CLI will provide the type variable
+in all cases.
+{%- endcomment -%}
+{%- if type -%}
+{%- assign type = type -%}
+{%- else -%}
+{%- assign type = "function" -%}
+{%- endif -%}
+{%- if type == "function" -%}
 {%- if event_type_import -%}
 use {{ event_type_import }};
 {%- endif %}
@@ -89,3 +101,61 @@ async fn main() -> Result<(), Error> {
 
     run(service_fn(function_handler)).await
 }
+{%- elsif type == "extension" -%}
+use lambda_extension::{service_fn, Error, LambdaEvent, NextEvent};
+
+async fn my_extension(event: LambdaEvent) -> Result<(), Error> {
+    match event.next {
+        NextEvent::Shutdown(_e) => {
+            // do something with the shutdown event
+        }
+        NextEvent::Invoke(_e) => {
+            // do something with the invoke event
+        }
+    }
+    Ok(())
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Error> {
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::INFO)
+        // disable printing the name of the module in every log line.
+        .with_target(false)
+        // disabling time is handy because CloudWatch will add the ingestion time.
+        .without_time()
+        .init();
+
+    let func = service_fn(my_extension);
+    lambda_extension::run(func).await
+}
+{%- elsif type == "logs_extension" -%}
+use lambda_extension::{service_fn, Error, Extension, LambdaLog, LambdaLogRecord, SharedService};
+use tracing::info;
+
+async fn handler(logs: Vec<LambdaLog>) -> Result<(), Error> {
+    for log in logs {
+        match log.record {
+            LambdaLogRecord::Function(_record) => {
+                // do something with the function log record
+            },
+            LambdaLogRecord::Extension(_record) => {
+                // do something with the extension log record
+            },
+            },
+            _ => (),
+        }
+    }
+
+    Ok(())
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Error> {
+    let logs_processor = SharedService::new(service_fn(handler));
+
+    Extension::new().with_logs_processor(logs_processor).run().await?;
+
+    Ok(())
+}
+{% endif %}
