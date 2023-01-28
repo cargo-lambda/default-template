@@ -15,13 +15,16 @@ edition = "2021"
 # and it will keep the alphabetic ordering for you.
 
 [dependencies]
+{% if event_type_import -%}
+aws_lambda_events = { version = "{{ aws_lambda_events_version | default: "0.7.3" }}", default-features = false, features = ["{{ event_type_feature }}"] }
+{% endif -%}
 {% if http_function -%}
 {%- if http_feature -%}
 lambda_http = { version = "{{ lambda_http_version | default: "0.7" }}", default-features = false, features = ["{{ http_feature }}"] }
 {%- else -%}
 lambda_http = "{{ lambda_http_version | default: "0.7" }}"
 {%- endif -%}
-{% endif %}
+{%- endif %}
 lambda_runtime = "{{ lambda_runtime_version | default: "0.7" }}"
 {% if basic_example -%}
 serde = "1.0.136"
