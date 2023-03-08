@@ -32,7 +32,7 @@ struct Response {
 /// There are some code example in the following URLs:
 /// - https://github.com/awslabs/aws-lambda-rust-runtime/tree/main/examples
 /// - https://github.com/aws-samples/serverless-rust-demo/
-async fn function_handler(_event: LambdaEvent<Request>) -> Result<Response, Error> {
+async fn function_handler(event: LambdaEvent<Request>) -> Result<Response, Error> {
     // Extract some useful info from the request
     let command = event.payload.command;
 
@@ -51,7 +51,7 @@ async fn function_handler(_event: LambdaEvent<Request>) -> Result<Response, Erro
 /// Write your code inside it.
 /// There are some code example in the following URLs:
 /// - https://github.com/awslabs/aws-lambda-rust-runtime/tree/main/examples
-async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
+async fn function_handler(_event: Request) -> Result<Response<Body>, Error> {
     // Extract some useful information from the request
 
     // Return something that implements IntoResponse.
