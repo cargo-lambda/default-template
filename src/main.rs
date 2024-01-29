@@ -8,6 +8,7 @@ use lambda_runtime::{run, service_fn, Error, LambdaEvent};
 {% endif %}
 {% if basic_example -%}
 use serde::{Deserialize, Serialize};
+use tracing_subscriber::filter::{EnvFilter, LevelFilter};
 
 /// This is a made-up example. Requests come into the runtime as unicode
 /// strings in json format, which can map to any structure that implements `serde::Deserialize`
@@ -86,8 +87,9 @@ async fn function_handler(event: LambdaEvent<{{ event_type }}>) -> Result<(), Er
 async fn main() -> Result<(), Error> {
     tracing_subscriber::fmt()
         .with_env_filter(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or(tracing_subscriber::EnvFilter::new("INFO")),
+            EnvFilter::builder()
+                .with_default_directive(LevelFilter::INFO.into())
+                .from_env_lossy(),
         )
         // disable printing the name of the module in every log line.
         .with_target(false)
