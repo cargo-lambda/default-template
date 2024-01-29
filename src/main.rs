@@ -1,3 +1,5 @@
+use tracing_subscriber::filter::{EnvFilter, LevelFilter};
+
 {%- if event_type_import -%}
 use {{ event_type_import }};
 {%- endif %}
@@ -8,7 +10,6 @@ use lambda_runtime::{run, service_fn, Error, LambdaEvent};
 {% endif %}
 {% if basic_example -%}
 use serde::{Deserialize, Serialize};
-use tracing_subscriber::filter::{EnvFilter, LevelFilter};
 
 /// This is a made-up example. Requests come into the runtime as unicode
 /// strings in json format, which can map to any structure that implements `serde::Deserialize`
