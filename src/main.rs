@@ -1,12 +1,10 @@
-use tracing_subscriber::filter::{EnvFilter, LevelFilter};
-
 {%- if event_type_import -%}
 use {{ event_type_import }};
 {%- endif %}
 {%- if http_function -%}
-use lambda_http::{run, service_fn, Body, Error, Request, RequestExt, Response};
+use lambda_http::{run, service_fn, tracing, Body, Error, Request, RequestExt, Response};
 {%- else -%}
-use lambda_runtime::{run, service_fn, Error, LambdaEvent};
+use lambda_runtime::{run, service_fn, tracing, Error, LambdaEvent};
 {% endif %}
 {% if basic_example -%}
 use serde::{Deserialize, Serialize};
@@ -86,17 +84,7 @@ async fn function_handler(event: LambdaEvent<{{ event_type }}>) -> Result<(), Er
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    tracing_subscriber::fmt()
-        .with_env_filter(
-            EnvFilter::builder()
-                .with_default_directive(LevelFilter::INFO.into())
-                .from_env_lossy(),
-        )
-        // disable printing the name of the module in every log line.
-        .with_target(false)
-        // disabling time is handy because CloudWatch will add the ingestion time.
-        .without_time()
-        .init();
+    tracing::init_default_subscriber();
 
     run(service_fn(function_handler)).await
 }
